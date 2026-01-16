@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: libflow-api
+
+  datasource:
+    # Substitua 'localhost:5432/bibliotecadb' pelo seu IP e nome do banco real
+    url: jdbc:postgresql://localhost:5432/bibliotecadb
+    username: postgres
+    password: sua_senha_aqui
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # 'update' cria/altera as tabelas automaticamente no Postgres
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        # Necessário para o Postgres em algumas versões
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  # Desativando o Flyway completamente
+  flyway:
+    enabled: false

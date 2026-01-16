@@ -1,5 +1,6 @@
 package br.com.academia.bibliotecalocacao.repository;
 
+import br.com.academia.bibliotecalocacao.dtos.AluguelDTO;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
 import br.com.academia.bibliotecalocacao.entity.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,9 @@ public interface AluguelRepository extends JpaRepository<Aluguel, Long> {
     boolean existsByLivroId(Long livroId);
 
     @Query("SELECT a.livro FROM Aluguel a WHERE a.locatario.id = :locatarioId AND a.dataDevolucao >= CURRENT_DATE")
-    List<Livro> findLivrosAlugadosPorLocatarioId (@Param("locatarioId") Long locatarioId);
+    List<Livro> findLivrosAlugadosPorLocatarioId(@Param("locatarioId") Long locatarioId);
+
+    @Query("SELECT new br.com.academia.bibliotecalocacao.dtos.AluguelDTO(a.id, a.dataRetirada, a.dataDevolucao, a.livro.id, a.livro.nome, a.locatario.id, a.locatario.nome) FROM Aluguel a")
+    List<AluguelDTO> listarTodosOsAlugueis();
 
 }

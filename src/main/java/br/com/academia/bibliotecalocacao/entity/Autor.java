@@ -30,7 +30,7 @@ public class Autor {
     @NotNull(message = "A nacionalidade do autor é obrigatória")
     @Column(name = "ano_nascimento", nullable = false)
     @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate anoNascimento;
+    private Integer anoNascimento;
 
     @NotBlank(message = "O CPF do autor é obrigatório")
     @Column(nullable = false, unique = true, length = 11)
