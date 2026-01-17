@@ -14,7 +14,7 @@ import br.com.academia.bibliotecalocacao.entity.Locatario;
 import br.com.academia.bibliotecalocacao.repository.AluguelRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import br.com.academia.bibliotecalocacao.repository.LocatarioRepository;
-import jakarta.persistence.Id;
+import br.com.academia.bibliotecalocacao.service.AluguelService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +22,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -104,6 +108,7 @@ public class servivealugueltest {
         }
     }
 
+
     @Test
     void deveLancarErroAoBuscarAluguelInexistenteTest() {
         Long aluguelId = 999L;
@@ -118,6 +123,36 @@ public class servivealugueltest {
 
         verify(aluguelRepository, times(1)).findById(aluguelId);
     }
+
+    @Test
+    void deveLisarTodosOsAlugueisComSucesso() {
+
+        // Preparando dados de teste
+        PageRequest pageable = PageRequest.of(0, 10);
+        Aluguel aluguel1 = new Aluguel();
+        aluguel1.setId(1L);
+
+        aluguel1.setLivro(new Livro());
+        aluguel1.setLocatario(new Locatario());
+        aluguel1.setDataRetirada(LocalDate.now());
+        aluguel1.setDataDevolucao(LocalDate.now().plusDays(2));
+
+        //Criando uma pagina fake
+        Page<Aluguel> pageFake = new PageImpl<>(List.of(aluguel1));
+
+        //Mockando o comportamento do repositorio
+        when(aluguelRepository.findAll(pageable)).thenReturn(pageFake);
+
+        //Chamando o servico
+        Page<AluguelDTO> resultado = aluguelService.listarTodos(pageable);
+
+        assertNotNull(resultado, "O resultado não deve ser nulo");
+        assertEquals(1, resultado.getTotalElements(), "Deve conter 1 elemento na página");
+        assertEquals(1L, resultado.getContent().get(0).id(), "O ID do aluguel deve ser 1L");
+
+        verify(aluguelRepository, times(1)).findAll(pageable);
+    }
+
 
     @Test
     void deveBuscarAluguelPorIdComSucessoTest() {

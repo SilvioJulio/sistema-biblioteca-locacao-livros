@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.AluguelServiceTest;
+package br.com.academia.bibliotecalocacao.service;
 
 
 import br.com.academia.bibliotecalocacao.dtos.AluguelDTO;
@@ -6,15 +6,16 @@ import br.com.academia.bibliotecalocacao.dtos.AluguelRequestDTO;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
 import br.com.academia.bibliotecalocacao.entity.Livro;
 import br.com.academia.bibliotecalocacao.entity.Locatario;
+import br.com.academia.bibliotecalocacao.mapper.AlugueMapper;
 import br.com.academia.bibliotecalocacao.repository.AluguelRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import br.com.academia.bibliotecalocacao.repository.LocatarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 
 @Service
 public class AluguelService {
@@ -38,7 +39,7 @@ public class AluguelService {
                 .orElseThrow(() -> new RuntimeException("Locatário não encontrado com "));
 
 
-      Aluguel aluguel = new Aluguel();
+        Aluguel aluguel = new Aluguel();
         aluguel.setLivro(livro);
         aluguel.setLocatario(locatario);
         aluguel.setDataRetirada(java.time.LocalDate.now());
@@ -58,26 +59,16 @@ public class AluguelService {
 
     }
 
-    public Page<AluguelDTO> listarTodos (Pageable pageable){
-        return  aluguelRepository.findAll((Sort) pageable).stream().map(aluguel -> )
+    public Page<AluguelDTO> listarTodos(Pageable pageable) {
+        return aluguelRepository.findAll(pageable)
+                .map(AlugueMapper::toDTO);
     }
 
     public AluguelDTO buscarPorId(Long id) {
         Aluguel aluguel = aluguelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aluguel não encontrado com ID: " + id));
 
-        Livro livro = aluguel.getLivro();
-        Locatario locatario = aluguel.getLocatario();
-
-        return new AluguelDTO(
-                aluguel.getId(),
-                aluguel.getDataRetirada(),
-                aluguel.getDataDevolucao(),
-                livro.getId(),
-                livro.getNome(),
-                locatario.getId(),
-                locatario.getNome()
-        );
+        return AlugueMapper.toDTO(aluguel);
     }
 
     public AluguelDTO atualizar(Long id, AluguelRequestDTO aluguelRequest) {

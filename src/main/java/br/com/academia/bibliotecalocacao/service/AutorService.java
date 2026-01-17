@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.AluguelServiceTest;
+package br.com.academia.bibliotecalocacao.service;
 
 import org.springframework.stereotype.Service;
 
