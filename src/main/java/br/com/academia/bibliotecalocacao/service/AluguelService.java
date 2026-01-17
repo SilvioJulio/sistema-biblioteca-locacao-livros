@@ -1,8 +1,8 @@
 package br.com.academia.bibliotecalocacao.service;
 
 
-import br.com.academia.bibliotecalocacao.dtos.AluguelDTO;
-import br.com.academia.bibliotecalocacao.dtos.AluguelRequestDTO;
+import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponseDTO;
+import br.com.academia.bibliotecalocacao.dtos.request.AluguelRequest;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
 import br.com.academia.bibliotecalocacao.entity.Livro;
 import br.com.academia.bibliotecalocacao.entity.Locatario;
@@ -30,7 +30,7 @@ public class AluguelService {
     private LocatarioRepository locatarioRepository;
 
 
-    public AluguelDTO criar(AluguelRequestDTO aluguelRequest) {
+    public AluguelResponseDTO criar(AluguelRequest aluguelRequest) {
         Livro livro = livroRepository.findById(aluguelRequest.livroId())
                 .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + aluguelRequest.livroId()));
 
@@ -47,7 +47,7 @@ public class AluguelService {
 
         Aluguel salvo = aluguelRepository.save(aluguel);
 
-        return new AluguelDTO(
+        return new AluguelResponseDTO(
                 salvo.getId(),
                 salvo.getDataRetirada(),
                 salvo.getDataDevolucao(),
@@ -59,19 +59,19 @@ public class AluguelService {
 
     }
 
-    public Page<AluguelDTO> listarTodos(Pageable pageable) {
+    public Page<AluguelResponseDTO> listarTodos(Pageable pageable) {
         return aluguelRepository.findAll(pageable)
                 .map(AlugueMapper::toDTO);
     }
 
-    public AluguelDTO buscarPorId(Long id) {
+    public AluguelResponseDTO buscarPorId(Long id) {
         Aluguel aluguel = aluguelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aluguel não encontrado com ID: " + id));
 
         return AlugueMapper.toDTO(aluguel);
     }
 
-    public AluguelDTO atualizar(Long id, AluguelRequestDTO aluguelRequest) {
+    public AluguelResponseDTO atualizar(Long id, AluguelRequest aluguelRequest) {
         Aluguel aluguelExistente = aluguelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aluguel não encontrado com ID: " + id));
 
@@ -87,7 +87,7 @@ public class AluguelService {
 
         Aluguel atualizado = aluguelRepository.save(aluguelExistente);
 
-        return new AluguelDTO(
+        return new AluguelResponseDTO(
                 atualizado.getId(),
                 atualizado.getDataRetirada(),
                 atualizado.getDataDevolucao(),

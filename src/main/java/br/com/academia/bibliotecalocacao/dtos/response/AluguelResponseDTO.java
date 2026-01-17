@@ -1,10 +1,10 @@
-package br.com.academia.bibliotecalocacao.dtos;
+package br.com.academia.bibliotecalocacao.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 
-public record AluguelDTO(
+public record AluguelResponseDTO(
         Long id,
         @JsonFormat(pattern = "dd/MM/yyyy") LocalDate dataRetirada,
         @JsonFormat(pattern = "dd/MM/yyyy") LocalDate dataDevolucao,

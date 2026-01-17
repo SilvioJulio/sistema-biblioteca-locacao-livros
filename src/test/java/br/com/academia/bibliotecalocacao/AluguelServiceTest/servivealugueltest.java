@@ -1,6 +1,6 @@
 package br.com.academia.bibliotecalocacao.AluguelServiceTest;
 
-import br.com.academia.bibliotecalocacao.dtos.AluguelDTO;
+import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponseDTO;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import br.com.academia.bibliotecalocacao.dtos.AluguelRequestDTO;
+import br.com.academia.bibliotecalocacao.dtos.request.AluguelRequest;
 import br.com.academia.bibliotecalocacao.entity.Livro;
 import br.com.academia.bibliotecalocacao.entity.Locatario;
 import br.com.academia.bibliotecalocacao.repository.AluguelRepository;
@@ -55,7 +55,7 @@ public class servivealugueltest {
     @Test
     void deveCriarAluguelComSucessoTest() {
 
-        AluguelRequestDTO aluguelRequestDTO = new AluguelRequestDTO(1L, 1L);
+        AluguelRequest aluguelRequest = new AluguelRequest(1L, 1L);
 
         Livro livro = new Livro();
         livro.setId(1L);
@@ -75,7 +75,7 @@ public class servivealugueltest {
             return a;
         });
 
-        AluguelDTO resultado = aluguelService.criar(aluguelRequestDTO);
+        AluguelResponseDTO resultado = aluguelService.criar(aluguelRequest);
 
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(10L, resultado.id());
@@ -94,7 +94,7 @@ public class servivealugueltest {
 
     @Test
     void deveRetornarErroAoCriarAluguelComLivroInexistenteTest() {
-        AluguelRequestDTO aluguelRequestDTO = new AluguelRequestDTO(999L, 1L);
+        AluguelRequest aluguelRequest = new AluguelRequest(999L, 1L);
 
         Livro livro = new Livro();
         livro.setId(1L);
@@ -102,9 +102,9 @@ public class servivealugueltest {
 
         when(livroRepository.findById(999L)).thenReturn(Optional.empty());
         try {
-            aluguelService.criar(aluguelRequestDTO);
+            aluguelService.criar(aluguelRequest);
         } catch (RuntimeException e) {
-            assertEquals("Livro não encontrado com ID: " + aluguelRequestDTO.livroId(), e.getMessage());
+            assertEquals("Livro não encontrado com ID: " + aluguelRequest.livroId(), e.getMessage());
         }
     }
 
@@ -144,7 +144,7 @@ public class servivealugueltest {
         when(aluguelRepository.findAll(pageable)).thenReturn(pageFake);
 
         //Chamando o servico
-        Page<AluguelDTO> resultado = aluguelService.listarTodos(pageable);
+        Page<AluguelResponseDTO> resultado = aluguelService.listarTodos(pageable);
 
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(1, resultado.getTotalElements(), "Deve conter 1 elemento na página");
@@ -175,7 +175,7 @@ public class servivealugueltest {
 
         when(aluguelRepository.findById(aluguelId)).thenReturn(Optional.of(aluguel));
 
-        AluguelDTO resultado = aluguelService.buscarPorId(aluguelId);
+        AluguelResponseDTO resultado = aluguelService.buscarPorId(aluguelId);
 
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(aluguelId, resultado.id());
