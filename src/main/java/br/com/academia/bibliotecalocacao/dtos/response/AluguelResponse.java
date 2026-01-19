@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 
-public record AluguelResponseDTO(
+public record AluguelResponse(
         Long id,
         @JsonFormat(pattern = "dd/MM/yyyy") LocalDate dataRetirada,
         @JsonFormat(pattern = "dd/MM/yyyy") LocalDate dataDevolucao,

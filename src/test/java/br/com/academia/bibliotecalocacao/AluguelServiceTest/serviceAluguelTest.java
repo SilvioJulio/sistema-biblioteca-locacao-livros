@@ -1,6 +1,6 @@
 package br.com.academia.bibliotecalocacao.AluguelServiceTest;
 
-import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponseDTO;
+import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
-public class servivealugueltest {
+public class serviceAluguelTest {
 
     @InjectMocks
     private AluguelService aluguelService;
@@ -75,7 +75,7 @@ public class servivealugueltest {
             return a;
         });
 
-        AluguelResponseDTO resultado = aluguelService.criar(aluguelRequest);
+        AluguelResponse resultado = aluguelService.criar(aluguelRequest);
 
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(10L, resultado.id());
@@ -107,7 +107,41 @@ public class servivealugueltest {
             assertEquals("Livro não encontrado com ID: " + aluguelRequest.livroId(), e.getMessage());
         }
     }
+    @Test
+    void  deveAtualizarAluguelComSucessoTest() {
+        Long aluguelId = 10L;
 
+        AluguelRequest aluguelRequest = new AluguelRequest(1L, 1L);
+
+        Livro livro = new Livro();
+        livro.setId(1L);
+        livro.setNome("Java Progressivo 2026");
+
+        Locatario locatario = new Locatario();
+        locatario.setId(1L);
+        locatario.setNome("Maria Silva");
+
+        Aluguel aluguelExistente = new Aluguel();
+        aluguelExistente.setId(aluguelId);
+        aluguelExistente.setLivro(livro);
+        aluguelExistente.setLocatario(locatario);
+        aluguelExistente.setDataRetirada(LocalDate.now());
+        aluguelExistente.setDataDevolucao(LocalDate.now().plusDays(2));
+
+        when(aluguelRepository.findById(aluguelId)).thenReturn(Optional.of(aluguelExistente));
+        when(livroRepository.findById(1L)).thenReturn(Optional.of(livro));
+        when(locatarioRepository.findById(1L)).thenReturn(Optional.of(locatario));
+        when(aluguelRepository.save(any(Aluguel.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        AluguelResponse resultado = aluguelService.atualizar(aluguelId, aluguelRequest);
+
+        assertNotNull(resultado, "O resultado não deve ser nulo");
+        assertEquals(aluguelId, resultado.id());
+        assertEquals("Java Progressivo 2026", resultado.livroNome());
+        assertEquals("Maria Silva", resultado.locatarioNome());
+
+        verify(aluguelRepository, times(1)).save(any(Aluguel.class));
+    }
 
     @Test
     void deveLancarErroAoBuscarAluguelInexistenteTest() {
@@ -144,7 +178,7 @@ public class servivealugueltest {
         when(aluguelRepository.findAll(pageable)).thenReturn(pageFake);
 
         //Chamando o servico
-        Page<AluguelResponseDTO> resultado = aluguelService.listarTodos(pageable);
+        Page<AluguelResponse> resultado = aluguelService.listarTodos(pageable);
 
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(1, resultado.getTotalElements(), "Deve conter 1 elemento na página");
@@ -175,7 +209,7 @@ public class servivealugueltest {
 
         when(aluguelRepository.findById(aluguelId)).thenReturn(Optional.of(aluguel));
 
-        AluguelResponseDTO resultado = aluguelService.buscarPorId(aluguelId);
+        AluguelResponse resultado = aluguelService.buscarPorId(aluguelId);
 
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(aluguelId, resultado.id());

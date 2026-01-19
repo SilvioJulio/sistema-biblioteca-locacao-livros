@@ -1,10 +1,12 @@
 package br.com.academia.bibliotecalocacao.service;
 
 import br.com.academia.bibliotecalocacao.dtos.response.AutorResponse;
-import br.com.academia.bibliotecalocacao.entity.Livro;
+import br.com.academia.bibliotecalocacao.mapper.AutorMapper;
 import br.com.academia.bibliotecalocacao.repository.AutorRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,24 +19,46 @@ public class AutorService {
     private LivroRepository livroRepository;
 
 
-    public AutorResponse buscarAutorPorLivroId(Long livroId) {
-        Livro livro = livroRepository.findById(livroId)
-                .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + livroId));
-
-        var autor = livro.getAutor();
-
-        return new AutorResponse(
-                autor.getId(),
-                autor.getNome(),
-                autor.getSexo(),
-                autor.getAnoNascimento(),
-                autor.getCpf()
-        );
+    public AutorResponse criarAutor(AutorResponse autorResponse) {
+        var autorEntity = AutorMapper.toEntity(autorResponse);
+        var autorSalvo = autorRepository.save(autorEntity);
+        return AutorMapper.toResponse(autorSalvo);
     }
 
+    public AutorResponse buscarAutorPorId(Long autorId) {
+        return autorRepository.findById(autorId)
+                .map(AutorMapper ::toResponse)
+                .orElseThrow(() -> new RuntimeException("Autor não encontrado com ID: " + autorId));
+    }
 
+    public Page<AutorResponse> listarTodosAutores(Pageable pageable) {
+        return autorRepository.findAll(pageable)
+                .map(AutorMapper ::toResponse);
+    }
 
+    public AutorResponse atualizarAutor(Long autorId, AutorResponse autorResponse) {
+        var autorExistente = autorRepository.findById(autorId)
+                .orElseThrow(() -> new RuntimeException("Autor não encontrado com ID: " + autorId));
 
+        autorExistente.setNome(autorResponse.nome());
+        autorExistente.setSexo(autorResponse.sexo());
+        autorExistente.setAnoNascimento(autorResponse.anoNascimento());
+        autorExistente.setCpf(autorResponse.cpf());
 
+        var autorAtualizado = autorRepository.save(autorExistente);
+        return AutorMapper.toResponse(autorAtualizado);
+    }
+
+    public void deletarAutor(Long autorId){
+        var autorExistente = autorRepository.findById(autorId)
+                .orElseThrow(() -> new RuntimeException("Autor não encontrado com ID: " + autorId));
+
+        boolean hasLivros = livroRepository.existsByAutorId(autorId);
+        if (hasLivros) {
+            throw new RuntimeException("Não é possível deletar o autor, existem livros associados a ele.");
+        }
+
+        autorRepository.delete(autorExistente);
+    }
 
 }

@@ -106,7 +106,17 @@
 					</excludes>
 				</configuration>
 			</plugin>
-		</plugins>
+
+            <!-- Removendo mesnagem de aviso do Mockito + ByteBuddy + JDK. -->
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 	<repositories>
 		<repository>

@@ -1,13 +1,16 @@
 package br.com.academia.bibliotecalocacao.mapper;
 
-import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponseDTO;
+import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse;
+import br.com.academia.bibliotecalocacao.entity.Aluguel;
+import br.com.academia.bibliotecalocacao.entity.Livro;
+import br.com.academia.bibliotecalocacao.entity.Locatario;
 
 public class AlugueMapper {
-    public static AluguelResponseDTO toDTO(br.com.academia.bibliotecalocacao.entity.Aluguel aluguel) {
+    public static AluguelResponse toDTO(br.com.academia.bibliotecalocacao.entity.Aluguel aluguel) {
         if (aluguel == null) {
-            return null;
+            throw new IllegalArgumentException("Aluguel não pode ser nulo");
         }
-        return new AluguelResponseDTO(
+        return new AluguelResponse(
                 aluguel.getId(),
                 aluguel.getDataRetirada(),
                 aluguel.getDataDevolucao(),
@@ -18,6 +21,15 @@ public class AlugueMapper {
                 aluguel.getLocatario() != null ? aluguel.getLocatario().getId() : null,
                 aluguel.getLocatario() != null ? aluguel.getLocatario().getNome() : null
         );
+    }
+
+    public static Aluguel toEntity(Livro livro, Locatario locatario) {
+        Aluguel aluguel = new Aluguel();
+        aluguel.setLivro(livro);
+        aluguel.setLocatario(locatario);
+        aluguel.setDataRetirada(java.time.LocalDate.now());
+        aluguel.setDataDevolucao(java.time.LocalDate.now().plusDays(2));
+        return aluguel;
     }
 
 
