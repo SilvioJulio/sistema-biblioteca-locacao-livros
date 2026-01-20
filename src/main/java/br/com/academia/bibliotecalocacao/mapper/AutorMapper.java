@@ -2,7 +2,9 @@ package br.com.academia.bibliotecalocacao.mapper;
 
 import br.com.academia.bibliotecalocacao.dtos.response.AutorResponse;
 import br.com.academia.bibliotecalocacao.entity.Autor;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AutorMapper {
 
     // Converte de Entidade para DTO de Resposta (GET / Saída)

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Table(name = "livros")
 @Setter
 @Getter
+@AllArgsConstructor
 public class Livro {
 
     @Id
@@ -35,6 +37,9 @@ public class Livro {
     @JoinColumn(name = "autor_id", nullable = false)
     @JsonIgnoreProperties("livros") // Evita que, ao carregar o autor, ele tente carregar os livros dele de novo
     private Autor autor;
+
+    public Livro() {}
+
 }
 
 

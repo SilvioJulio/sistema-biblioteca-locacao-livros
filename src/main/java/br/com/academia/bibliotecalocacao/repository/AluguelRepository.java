@@ -1,3 +1,4 @@
+
 package br.com.academia.bibliotecalocacao.repository;
 
 import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse;
@@ -9,11 +10,9 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface AluguelRepository extends JpaRepository<Aluguel, Long> {
 
     @Override
@@ -28,7 +27,18 @@ public interface AluguelRepository extends JpaRepository<Aluguel, Long> {
     @Query("SELECT a.livro FROM Aluguel a WHERE a.locatario.id = :locatarioId AND a.dataDevolucao >= CURRENT_DATE")
     List<Livro> findLivrosAlugadosPorLocatarioId(@Param("locatarioId") Long locatarioId);
 
-    @Query("SELECT new br.com.academia.bibliotecalocacao.dtos.AluguelDTO(a.id, a.dataRetirada, a.dataDevolucao, a.livro.id, a.livro.nome, a.locatario.id, a.locatario.nome) FROM Aluguel a")
-    List<AluguelResponse> listarTodosOsAlugueis();
 
+    @Query("""
+            SELECT new br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse(
+                a.id,
+                a.dataRetirada,
+                a.dataDevolucao,
+                a.livro.id,
+                a.livro.nome,
+                a.locatario.id,
+                a.locatario.nome
+            ) 
+            FROM Aluguel a
+            """)
+    List<AluguelResponse> listarTodosOsAlugueis();
 }

@@ -1,4 +1,9 @@
 package br.com.academia.bibliotecalocacao.dtos.request;
 
-public class LocatarioRequest {
+public record LocatarioRequest(
+        String nome,
+        String telefone,
+        String email
+
+) {
 }
