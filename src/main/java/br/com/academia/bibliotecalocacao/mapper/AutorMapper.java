@@ -7,8 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutorMapper {
 
+
     // Converte de Entidade para DTO de Resposta (GET / Saída)
-    public static AutorResponse toResponse(Autor autor) {
+    public  AutorResponse toResponse(Autor autor) {
         if (autor == null){
             throw new IllegalArgumentException("Autor não pode ser nulo");
         }
@@ -24,7 +25,7 @@ public class AutorMapper {
 
     }
     // Converte de DTO de Requisição para Entidade (POST/PUT / Entrada)
-    public static Autor toEntity(AutorResponse autorResponse) {
+    public  Autor toEntity(AutorResponse autorResponse) {
         if (autorResponse == null) {
             throw new IllegalArgumentException("AutorResponse não pode ser nulo");
         }

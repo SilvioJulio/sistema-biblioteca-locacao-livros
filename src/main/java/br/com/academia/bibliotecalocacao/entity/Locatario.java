@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
-@Setter
-@Getter
+@Table (name = "locatarios")
+@Setter @Getter
 public class Locatario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,7 @@ public class Locatario {
     @Column(nullable = false)
     private String telefone;
 
+
     @NotBlank(message = "O email é obrigatório")
     @Column(nullable = false, unique = true)
     private String email;
@@ -39,5 +41,9 @@ public class Locatario {
     @NotBlank(message = "O CPF é obrigatório")
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
+
+
+
+
 
 }

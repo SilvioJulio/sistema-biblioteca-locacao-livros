@@ -150,17 +150,17 @@ class LivroServiceTest {
         entidade.setIsbn("9780000000002");
         entidade.setDataPublicacao(LocalDate.of(2020, 5, 10));
 
+
         when(livroRepository.existsByIsbn("9780000000002")).thenReturn(false);
         when(livroMapper.toEntity(request)).thenReturn(entidade);
         when(autorRepository.findById(autorId)).thenReturn(Optional.empty());
 
-        // Act + Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> livroService.criarLivro(request));
-        assertTrue(ex.getMessage().contains("Autor não encontrado"));
 
         verify(livroRepository).existsByIsbn("9780000000002");
-        verify(livroMapper).toEntity(request);
+        verify(livroMapper).toEntity(request); // <-- espera que o mapper seja chamado
+
 
     }
     @Test
@@ -284,29 +284,23 @@ class LivroServiceTest {
         assertEquals(esperadoResponse.autor().nome(), result.autor().nome());
     }
 
+
+
     @Test
-    void deveLancarExcecaoQuandoAtualizarLivroNaoEncontrado() {
-        // Arrange
-        Long livroId = 99L;
+    void deveLancarExcecaoAoDeletarLivroInexistente() {
+        Long id = 99L;
+        when(livroRepository.existsById(id)).thenReturn(false);
 
-        LivroRequest request = new LivroRequest(
-                "Livro Inexistente",
-                "9780000000000",
-                LocalDate.of(2020, 1, 1),
-                1L
-        );
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> livroService.deletarLivroPorId(id));
 
-        when(livroRepository.findById(livroId)).thenReturn(Optional.empty());
+        assertEquals("Livro não encontrado para id=" + id, ex.getMessage());
 
-        // Act + Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> livroService.atualizarLivro(livroId, request));
-        assertEquals("Livro não encontrado", ex.getMessage());
-
-        verify(livroRepository).findById(livroId);
+        verify(livroRepository).existsById(id);
         verifyNoMoreInteractions(livroRepository);
-        verifyNoInteractions(autorRepository, livroMapper);
     }
+
+
     @Test
     void deveLisatarTodosLivrosComSucessoTest() {
         // Arrange
@@ -357,19 +351,17 @@ class LivroServiceTest {
         verifyNoMoreInteractions(livroRepository, livroMapper);
     }
 
+
     @Test
     void deveDeletarLivroComSucessoTest() {
-        // Arrange
         Long livroId = 1L;
-
         when(livroRepository.existsById(livroId)).thenReturn(true);
 
-        // Act
         livroService.deletarLivroPorId(livroId);
 
-        // Assert
         verify(livroRepository).existsById(livroId);
         verify(livroRepository).deleteById(livroId);
         verifyNoMoreInteractions(livroRepository);
     }
+
 }

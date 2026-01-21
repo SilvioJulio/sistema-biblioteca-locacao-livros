@@ -10,7 +10,7 @@ import br.com.academia.bibliotecalocacao.mapper.AlugueMapper;
 import br.com.academia.bibliotecalocacao.repository.AluguelRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import br.com.academia.bibliotecalocacao.repository.LocatarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,28 +18,27 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class AluguelService {
 
-    @Autowired
+
     private AluguelRepository aluguelRepository;
 
-    @Autowired
     private LivroRepository livroRepository;
 
-    @Autowired
     private LocatarioRepository locatarioRepository;
 
 
     public AluguelResponse criar(AluguelRequest aluguelRequest) {
-        Livro livro = livroRepository.findById(aluguelRequest.livroId())
-                .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + aluguelRequest.livroId()));
+        Livro livro = livroRepository.findById(aluguelRequest.id())
+                .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + aluguelRequest.id()));
 
 
         Locatario locatario = locatarioRepository.findById(aluguelRequest.locatarioId())
                 .orElseThrow(() -> new RuntimeException("Locatário não encontrado com "));
 
 
-       Aluguel aluguel = AlugueMapper.toEntity(livro, locatario);
+        Aluguel aluguel = AlugueMapper.toEntity(livro, locatario);
 
         Aluguel salvo = aluguelRepository.save(aluguel);
 
@@ -62,8 +61,8 @@ public class AluguelService {
         Aluguel aluguelExistente = aluguelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aluguel não encontrado com ID: " + id));
 
-        Livro livro = livroRepository.findById(aluguelRequest.livroId())
-                .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + aluguelRequest.livroId()));
+        Livro livro = livroRepository.findById(aluguelRequest.id())
+                .orElseThrow(() -> new RuntimeException("Livro não encontrado com ID: " + aluguelRequest.id()));
 
         Locatario locatario = locatarioRepository.findById(aluguelRequest.locatarioId())
                 .orElseThrow(() -> new RuntimeException("Locatário não encontrado com ID: " + aluguelRequest.locatarioId()));

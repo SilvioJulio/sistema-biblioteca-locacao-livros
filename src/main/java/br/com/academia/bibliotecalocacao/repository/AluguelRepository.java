@@ -40,5 +40,5 @@ public interface AluguelRepository extends JpaRepository<Aluguel, Long> {
             ) 
             FROM Aluguel a
             """)
-    List<AluguelResponse> listarTodosOsAlugueis();
+    boolean existsByLocatarioId(Long locatarioId);
 }

@@ -1,9 +1,18 @@
 package br.com.academia.bibliotecalocacao.dtos.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDate;
+
+
 public record LocatarioResponse(
         Long id,
         String nome,
-        String cpf,
-        String telefone
-) {
-}
+        String sexo,
+        String telefone,
+        String email,
+        @JsonFormat(pattern = "dd/MM/yyyy") LocalDate dataNascimento,
+        String cpf
+
+) { }
+

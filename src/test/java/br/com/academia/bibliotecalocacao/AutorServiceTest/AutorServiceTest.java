@@ -2,6 +2,7 @@ package br.com.academia.bibliotecalocacao.AutorServiceTest;
 
 import br.com.academia.bibliotecalocacao.dtos.response.AutorResponse;
 import br.com.academia.bibliotecalocacao.entity.Autor;
+import br.com.academia.bibliotecalocacao.mapper.AutorMapper;
 import br.com.academia.bibliotecalocacao.repository.AutorRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import br.com.academia.bibliotecalocacao.service.AutorService;
@@ -35,11 +36,11 @@ class AutorServiceTest {
     @Mock
     private AutorRepository autorRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
 
-    }
+    @Mock
+    private AutorMapper autorMapper;
+
+
 
     @Test
     void deveCriarAutorComSucessoTest() {
@@ -49,14 +50,21 @@ class AutorServiceTest {
         autorEntity.setCpf("04245678960");
         autorEntity.setAnoNascimento(1983);
 
+        when(autorMapper.toEntity(any(AutorResponse.class))).thenReturn(autorEntity);
 
-        when(autorRepository.save(org.mockito.ArgumentMatchers.any(Autor.class))).thenReturn(autorEntity);
+        when(autorRepository.save(any(Autor.class))).thenReturn(autorEntity);
+
+
+        when(autorMapper.toResponse(any(Autor.class))).thenReturn(autorResponse);
+
+
 
         AutorResponse resultado = autorService.criarAutor(autorResponse);
 
         assertNotNull(resultado);
         assertEquals(autorResponse.nome(), resultado.nome());
-        verify(autorRepository, times(1)).save(org.mockito.ArgumentMatchers.any(Autor.class));
+        verify(autorMapper).toEntity(any());
+        verify(autorRepository).save(any());
     }
 
     @Test
@@ -79,21 +87,26 @@ class AutorServiceTest {
     @Test
     void deveBuscarAutorPorIdComSucesso() {
         Long autorId = 1L;
-
-
         Autor autorEntity = new Autor();
         autorEntity.setId(autorId);
         autorEntity.setNome("João Silva");
 
+        AutorResponse responseEsperada = new AutorResponse(autorId, "João Silva", "Masculino", 1983, "04245678960");
+
         when(autorRepository.findById(autorId)).thenReturn(Optional.of(autorEntity));
 
+        // IMPORTANTE: Configurar o Mapper para converter a entidade no DTO esperado
+        when(autorMapper.toResponse(autorEntity)).thenReturn(responseEsperada);
+
+        // Act
         AutorResponse resultado = autorService.buscarAutorPorId(autorId);
 
+        // Assert
         assertNotNull(resultado);
         assertEquals(autorId, resultado.id());
         assertEquals("João Silva", resultado.nome());
-
-        verify(autorRepository, times(1)).findById(autorId);
+        verify(autorRepository).findById(autorId);
+        verify(autorMapper).toResponse(autorEntity);
 
     }
 
@@ -137,22 +150,27 @@ class AutorServiceTest {
     @Test
     void deveAtualizarAutorComSucessoTest() {
         Long autorId = 1L;
-
-        AutorResponse autorResponseAtualizado = new AutorResponse(null, "Maria Souza", "Feminino", 1990, "12345678901");
+        AutorResponse requestDto = new AutorResponse(autorId, "Maria Souza", "Feminino", 1990, "12345678901");
 
         Autor autorExistente = new Autor();
         autorExistente.setId(autorId);
-        autorExistente.setNome("João Silva");
-        autorExistente.setCpf("04245678960");
-        autorExistente.setAnoNascimento(1983);
+        // ... preencha outros campos se necessário
 
+        // Mocks
         when(autorRepository.findById(autorId)).thenReturn(Optional.of(autorExistente));
-        when(autorRepository.save(org.mockito.ArgumentMatchers.any(Autor.class))).thenReturn(autorExistente);
-        AutorResponse resultado = autorService.atualizarAutor(autorId, autorResponseAtualizado);
+        when(autorRepository.save(any(Autor.class))).thenReturn(autorExistente);
+
+        // IMPORTANTE: Configurar o Mapper
+        when(autorMapper.toResponse(any(Autor.class))).thenReturn(requestDto);
+
+        // Act
+        AutorResponse resultado = autorService.atualizarAutor(autorId, requestDto);
+
+        // Assert
         assertNotNull(resultado);
-        assertEquals(autorResponseAtualizado.nome(), resultado.nome());
-        verify(autorRepository, times(1)).findById(autorId);
-        verify(autorRepository, times(1)).save(org.mockito.ArgumentMatchers.any(Autor.class));
+        assertEquals("Maria Souza", resultado.nome());
+        verify(autorRepository).save(any(Autor.class));
+        verify(autorMapper).toResponse(any(Autor.class));
     }
 
 

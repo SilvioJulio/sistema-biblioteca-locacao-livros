@@ -8,10 +8,12 @@ import br.com.academia.bibliotecalocacao.entity.Livro;
 import br.com.academia.bibliotecalocacao.mapper.LivroMapper;
 import br.com.academia.bibliotecalocacao.repository.AutorRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 
 @Service
@@ -22,68 +24,71 @@ public class LivroService {
     private final AutorRepository autorRepository;
     private final LivroMapper livroMapper;
 
-    public LivroResponse criarLivro(LivroRequest request) {
-
+    public LivroResponse criarLivro(@Valid LivroRequest request) {
         if (livroRepository.existsByIsbn(request.isbn())) {
             throw new IllegalArgumentException("ISBN já cadastrado");
         }
-
-        Livro livro = livroMapper.toEntity(request);
-
-        if (request.autorId() != null) {
-            Autor autor = autorRepository.findById(request.autorId())
-                    .orElseThrow(() -> new RuntimeException("Autor não encontrado"));
-            livro.setAutor(autor);
+        if (request.autorId() == null) {
+            throw new IllegalArgumentException("autorId é obrigatório");
         }
 
+        // 1) Mapear antes (para satisfazer o teste)
+        Livro livro = livroMapper.toEntity(request);
+
+        // 2) Buscar autor (pode lançar)
+        Autor autor = autorRepository.findById(request.autorId())
+                .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado para id=" + request.autorId()));
+
+        // 3) Setar autor e salvar
+        livro.setAutor(autor);
         Livro salvo = livroRepository.save(livro);
         return livroMapper.toResponse(salvo);
     }
 
-    public LivroResponse buscarLivroPorId(Long livroId) {
-        Livro livro = livroRepository.findById(livroId)
+    public LivroResponse buscarLivroPorId(Long id) {
+        Livro livro = livroRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
-
         return livroMapper.toResponse(livro);
     }
 
-    public LivroResponse atualizarLivro(Long livroId, LivroRequest request) {
-
-        Livro existente = livroRepository.findById(livroId)
+    public LivroResponse atualizarLivro(Long id, @Valid LivroRequest request) {
+        Livro existente = livroRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
 
-        if (!existente.getIsbn().equals(request.isbn())
-                && livroRepository.existsByIsbn(request.isbn())) {
+        if (!existente.getIsbn().equals(request.isbn()) && livroRepository.existsByIsbn(request.isbn())) {
             throw new IllegalArgumentException("ISBN já cadastrado");
         }
+
+        Autor autor = autorRepository.findById(request.autorId())
+                .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado para id=" + request.autorId()));
 
         existente.setNome(request.nome());
         existente.setIsbn(request.isbn());
         existente.setDataPublicacao(request.dataPublicacao());
+        existente.setAutor(autor);
 
-        if (request.autorId() != null) {
-            Autor autor = autorRepository.findById(request.autorId())
-                    .orElseThrow(() -> new RuntimeException("Autor não encontrado"));
-            existente.setAutor(autor);
-        }
-
-        Livro atualizado = livroRepository.save(existente);
-        return livroMapper.toResponse(atualizado);
+        Livro salvo = livroRepository.save(existente);
+        return livroMapper.toResponse(salvo);
     }
 
     public List<LivroResponse> listarTodosLivros() {
-        return livroRepository.findAll().stream()
+        return livroRepository.findAll()
+                .stream()
                 .map(livroMapper::toResponse)
                 .toList();
     }
 
-    public void  deletarLivroPorId(Long livroId) {
-        if (!livroRepository.existsById(livroId)) {
-            throw new RuntimeException("Livro não encontrado");
+    public void deletarLivroPorId(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new IllegalArgumentException("Livro não encontrado para id=" + id);
         }
-        livroRepository.deleteById(livroId);
+        livroRepository.deleteById(id);
     }
 }
+
+
+
+
 
 
 

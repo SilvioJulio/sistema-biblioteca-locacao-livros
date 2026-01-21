@@ -104,7 +104,7 @@ public class serviceAluguelTest {
         try {
             aluguelService.criar(aluguelRequest);
         } catch (RuntimeException e) {
-            assertEquals("Livro não encontrado com ID: " + aluguelRequest.livroId(), e.getMessage());
+            assertEquals("Livro não encontrado com ID: " + aluguelRequest.id(), e.getMessage());
         }
     }
     @Test

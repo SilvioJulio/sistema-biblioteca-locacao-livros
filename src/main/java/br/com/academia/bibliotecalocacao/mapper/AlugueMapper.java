@@ -4,6 +4,8 @@ import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
 import br.com.academia.bibliotecalocacao.entity.Livro;
 import br.com.academia.bibliotecalocacao.entity.Locatario;
+import org.springframework.stereotype.Component;
+
 
 public class AlugueMapper {
     public static AluguelResponse toDTO(br.com.academia.bibliotecalocacao.entity.Aluguel aluguel) {

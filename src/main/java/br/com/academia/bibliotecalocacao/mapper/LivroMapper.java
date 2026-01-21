@@ -10,15 +10,18 @@ import br.com.academia.bibliotecalocacao.entity.Livro;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
+
 @Component
 @RequiredArgsConstructor
 public class LivroMapper {
 
     private final AutorMapper autorMapper;
 
+
     public Livro toEntity(LivroRequest request) {
-        if (request == null)
+        if (request == null) {
             throw new IllegalArgumentException("LivroRequest não pode ser nulo");
+        }
 
         Livro livro = new Livro();
         livro.setNome(request.nome());
@@ -28,18 +31,26 @@ public class LivroMapper {
         return livro;
     }
 
+
     public LivroResponse toResponse(Livro livro) {
-        if (livro == null)
+        if (livro == null) {
             throw new IllegalArgumentException("Livro não pode ser nulo");
+        }
+
+        AutorResponse autorResp = null;
+        if (livro.getAutor() != null) {
+            autorResp = autorMapper.toResponse(livro.getAutor());
+        }
 
         return new LivroResponse(
                 livro.getId(),
                 livro.getNome(),
                 livro.getIsbn(),
                 livro.getDataPublicacao(),
-                autorMapper.toResponse(livro.getAutor())
+                autorResp
         );
     }
+
 }
 
 

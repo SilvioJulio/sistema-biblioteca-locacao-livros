@@ -4,36 +4,37 @@ import br.com.academia.bibliotecalocacao.dtos.response.AutorResponse;
 import br.com.academia.bibliotecalocacao.mapper.AutorMapper;
 import br.com.academia.bibliotecalocacao.repository.AutorRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AutorService {
 
-    @Autowired
     private AutorRepository autorRepository;
 
-    @Autowired
     private LivroRepository livroRepository;
+
+    private AutorMapper autorMapper;
 
 
     public AutorResponse criarAutor(AutorResponse autorResponse) {
-        var autorEntity = AutorMapper.toEntity(autorResponse);
+        var autorEntity = autorMapper.toEntity(autorResponse);
         var autorSalvo = autorRepository.save(autorEntity);
-        return AutorMapper.toResponse(autorSalvo);
+        return autorMapper.toResponse(autorSalvo);
     }
 
-    public AutorResponse buscarAutorPorId(Long autorId) {
-        return autorRepository.findById(autorId)
-                .map(AutorMapper ::toResponse)
-                .orElseThrow(() -> new RuntimeException("Autor não encontrado com ID: " + autorId));
+    public AutorResponse buscarAutorPorId(Long id) {
+        return autorRepository.findById(id)
+                .map(autorMapper::toResponse)
+                .orElseThrow(() -> new RuntimeException("Autor não encontrado com ID: " + id));
     }
 
     public Page<AutorResponse> listarTodosAutores(Pageable pageable) {
         return autorRepository.findAll(pageable)
-                .map(AutorMapper ::toResponse);
+                .map(autorMapper::toResponse);
     }
 
     public AutorResponse atualizarAutor(Long autorId, AutorResponse autorResponse) {
@@ -46,10 +47,10 @@ public class AutorService {
         autorExistente.setCpf(autorResponse.cpf());
 
         var autorAtualizado = autorRepository.save(autorExistente);
-        return AutorMapper.toResponse(autorAtualizado);
+        return autorMapper.toResponse(autorAtualizado);
     }
 
-    public void deletarAutor(Long autorId){
+    public void deletarAutor(Long autorId) {
         var autorExistente = autorRepository.findById(autorId)
                 .orElseThrow(() -> new RuntimeException("Autor não encontrado com ID: " + autorId));
 
