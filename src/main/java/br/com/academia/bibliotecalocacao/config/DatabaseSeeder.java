@@ -71,20 +71,22 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
+    // No seu DatabaseSeeder.java
     private void seedLocatarios() {
         if (locatarioRepository.count() == 0) {
-            System.out.println("👤 Criando Locatários...");
-            for (int i = 0; i < 5; i++) {
-                Locatario loc = new Locatario();
-                loc.setNome(faker.name().fullName());
-                loc.setCpf(faker.number().digits(11));
-                loc.setEmail(faker.internet().emailAddress());
-                loc.setTelefone("11999999999");
-                loc.setDataNascimento(LocalDate.of(1990, 1, 1));
-                locatarioRepository.save(loc);
+            for (int i = 0; i < 10; i++) {
+                Locatario locatario = new Locatario();
+                locatario.setNome(faker.name().fullName());
+                locatario.setSexo(faker.options().option("Masculino", "Feminino")); // Adicionado
+                locatario.setCpf(faker.number().digits(11));
+                locatario.setEmail(faker.internet().emailAddress());
+                locatario.setTelefone(faker.phoneNumber().cellPhone());
+                locatario.setDataNascimento(LocalDate.now().minusYears(25));
+                locatarioRepository.save(locatario);
             }
         }
     }
+
 
 
     private void seedAlugueis() {
