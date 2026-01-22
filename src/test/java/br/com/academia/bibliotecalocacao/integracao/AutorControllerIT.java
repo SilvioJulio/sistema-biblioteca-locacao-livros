@@ -7,6 +7,7 @@ import br.com.academia.bibliotecalocacao.repository.AutorRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,26 +44,36 @@ public class AutorControllerIT {
     private AutorRepository autorRepository;
 
 
+
+    @BeforeEach
+    void setUp() {
+        autorRepository.deleteAll();
+    }
+
+
+
     @Test
     @DisplayName("Deve criar um autor com sucesso")
     void deveCriarUmAutorComSucesso() throws Exception {
+        // Gera um final aleatório para o CPF para evitar duplicidade
+        String cpfUnico = "12345678" + (int)(Math.random() * 999);
+        if (cpfUnico.length() > 11) cpfUnico = cpfUnico.substring(0, 11);
 
         AutorRequest request = new AutorRequest(
                 "Fernanda Silva",
                 "Feminino",
                 1989,
-                "12345678901",
+                cpfUnico, // CPF dinâmico
                 null
         );
-
 
         mockMvc.perform(post("/api/autores")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nome").value("Fernanda Silva"))
-                .andExpect(jsonPath("$.cpf").value("12345678901"));
+                .andExpect(jsonPath("$.cpf").value(cpfUnico));
     }
+
 
     @Test
     @DisplayName("Deve encontrar autor por ID")

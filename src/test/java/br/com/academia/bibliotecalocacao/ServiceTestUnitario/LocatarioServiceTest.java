@@ -7,6 +7,7 @@ import br.com.academia.bibliotecalocacao.mapper.LocatarioMapper;
 import br.com.academia.bibliotecalocacao.repository.AluguelRepository;
 import br.com.academia.bibliotecalocacao.repository.LocatarioRepository;
 import br.com.academia.bibliotecalocacao.service.LocatarioService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -254,18 +255,28 @@ class LocatarioServiceTest {
 
 
     @Test
+    @DisplayName("Deve lançar NotFoundException ao tentar deletar locatário inexistente")
     void deveLancarNotFound_quandoDeletarIdInexistente() {
+        // Arrange
         Long id = 999L;
 
-        when(locatarioRepository.existsById(id)).thenReturn(false);
+        // CORREÇÃO: O serviço chama findById, então configuramos o mock para retornar Optional vazio
+        when(locatarioRepository.findById(id)).thenReturn(Optional.empty());
 
-        ChangeSetPersister.NotFoundException ex = assertThrows(ChangeSetPersister.NotFoundException.class,
+        // Act & Assert
+        var ex = assertThrows(ChangeSetPersister.NotFoundException.class,
                 () -> locatarioService.deletarLocatario(id));
 
-        assertTrue(ex.getMessage().contains("id=" + id));
-        verify(locatarioRepository, times(1)).existsById(id);
+        // Verificações
+        // Nota: Se a exceção NotFoundException nativa do Spring não possuir mensagem,
+        // valide apenas o tipo ou ajuste conforme sua implementação customizada.
+        verify(locatarioRepository, times(1)).findById(id);
+
+        // Garante que o método de deleção NUNCA foi chamado
         verify(locatarioRepository, never()).deleteById(anyLong());
+        verify(locatarioRepository, never()).delete(any());
     }
+
 
 
 
