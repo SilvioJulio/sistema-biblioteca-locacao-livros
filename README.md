@@ -3,7 +3,21 @@
 
 Este projeto é uma API REST robusta desenvolvida para gerenciar o aluguel de livros em uma biblioteca. O foco principal da implementação foi a **segurança de dados** e a **cobertura de testes de integração**.
 
-##  Documentação da API (Swagger)
+
+### 💻 Tecnologias Utilizadas
+
+O projeto foi desenvolvido utilizando o que há de mais moderno no ecossistema Java em 2026:
+
+*   **Java 21 (LTS):** Utilização de Records, Sealed Classes e as últimas melhorias de performance da JVM.
+*   **Spring Boot 3.4.1:** Framework base para a construção da API, facilitando a configuração e o deploy.
+*   **Spring Data JPA (Hibernate):** Abstração de persistência para facilitar o gerenciamento e as consultas no banco de dados.
+*   **Datafaker:** Biblioteca sucessora do JavaFaker, utilizada para gerar massas de dados realistas (nomes, CPFs e títulos) automaticamente.
+*   **SpringDoc OpenAPI (Swagger):** Documentação interativa da API, acessível via interface gráfica para testes rápidos.
+*   **H2 Database:** Banco de dados em memória utilizado para agilizar o ciclo de desenvolvimento e os testes de integração.
+*   **JUnit 5 & Mockito:** Conjunto de ferramentas essencial para a implementação de testes unitários e de integração robustos.
+
+
+###  Documentação da API (Swagger)
 
 Com a aplicação rodando, você pode acessar a documentação interativa, testar os endpoints e visualizar os esquemas de dados através do endereço:
 
