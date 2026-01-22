@@ -6,6 +6,8 @@ import br.com.academia.bibliotecalocacao.service.AutorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +31,14 @@ public class AutorController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AutorResponse>> listarTodos(Pageable pageable) {
+    public ResponseEntity<Page<AutorResponse>> listarTodos(
+            @org.springdoc.core.annotations.ParameterObject
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+
         return ResponseEntity.ok(autorService.listarTodosAutores(pageable));
     }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<AutorResponse> atualizar(@PathVariable Long id, @RequestBody AutorResponse request) {
