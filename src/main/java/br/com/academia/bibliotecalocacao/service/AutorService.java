@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AutorService {
 
-    private AutorRepository autorRepository;
+    private final AutorRepository autorRepository;
 
-    private LivroRepository livroRepository;
+    private final LivroRepository livroRepository;
 
-    private AutorMapper autorMapper;
+    private final  AutorMapper autorMapper;
 
 
     public AutorResponse criarAutor(AutorResponse autorResponse) {

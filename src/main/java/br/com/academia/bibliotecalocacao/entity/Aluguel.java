@@ -1,7 +1,9 @@
 package br.com.academia.bibliotecalocacao.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 @Table(name = "alugueis")
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Aluguel {
 
     @Id

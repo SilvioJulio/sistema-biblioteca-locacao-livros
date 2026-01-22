@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.LocatarioServiceTest;
+package br.com.academia.bibliotecalocacao.ServiceTestUnitario;
 
 import br.com.academia.bibliotecalocacao.dtos.request.LocatarioRequest;
 import br.com.academia.bibliotecalocacao.dtos.response.LocatarioResponse;

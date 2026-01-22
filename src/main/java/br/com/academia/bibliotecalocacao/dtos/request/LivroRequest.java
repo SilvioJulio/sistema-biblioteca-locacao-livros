@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
+
 public record LivroRequest(
 
         @NotBlank(message = "O nome do livro é obrigatório")

@@ -13,6 +13,20 @@
           hibernate:
             dialect: org.hibernate.dialect.H2Dialect
 
+    springdoc:
+      # Altera o caminho da interface visual (ex: http://localhost:8080/docs)
+      swagger-ui:
+        path: /docs
+        # Ordena os endpoints por ordem alfabética ou por tag
+        operations-sorter: alpha
+        tags-sorter: alpha
+      # Altera o caminho do JSON técnico da API
+      api-docs:
+        path: /v3/api-docs
+      # Mostra o tempo de resposta das requisições no Swagger
+      show-actuator: true
+
+
 
     #spring:
     #  application:

@@ -22,11 +22,9 @@ import org.springframework.stereotype.Service;
 public class AluguelService {
 
 
-    private AluguelRepository aluguelRepository;
-
-    private LivroRepository livroRepository;
-
-    private LocatarioRepository locatarioRepository;
+    private final AluguelRepository aluguelRepository;
+    private final LivroRepository livroRepository;
+    private final LocatarioRepository locatarioRepository;
 
 
     public AluguelResponse criar(AluguelRequest aluguelRequest) {

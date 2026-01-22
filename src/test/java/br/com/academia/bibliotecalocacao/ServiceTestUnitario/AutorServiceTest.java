@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.AutorServiceTest;
+package br.com.academia.bibliotecalocacao.ServiceTestUnitario;
 
 import br.com.academia.bibliotecalocacao.dtos.response.AutorResponse;
 import br.com.academia.bibliotecalocacao.entity.Autor;
@@ -6,12 +6,10 @@ import br.com.academia.bibliotecalocacao.mapper.AutorMapper;
 import br.com.academia.bibliotecalocacao.repository.AutorRepository;
 import br.com.academia.bibliotecalocacao.repository.LivroRepository;
 import br.com.academia.bibliotecalocacao.service.AutorService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
