@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+
+
 public interface AluguelRepository extends JpaRepository<Aluguel, Long> {
 
     @Override
@@ -27,18 +29,7 @@ public interface AluguelRepository extends JpaRepository<Aluguel, Long> {
     @Query("SELECT a.livro FROM Aluguel a WHERE a.locatario.id = :locatarioId AND a.dataDevolucao >= CURRENT_DATE")
     List<Livro> findLivrosAlugadosPorLocatarioId(@Param("locatarioId") Long locatarioId);
 
-
-    @Query("""
-            SELECT new br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse(
-                a.id,
-                a.dataRetirada,
-                a.dataDevolucao,
-                a.livro.id,
-                a.livro.nome,
-                a.locatario.id,
-                a.locatario.nome
-            ) 
-            FROM Aluguel a
-            """)
     boolean existsByLocatarioId(Long locatarioId);
 }
+
+

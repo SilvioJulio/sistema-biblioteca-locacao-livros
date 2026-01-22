@@ -11,20 +11,19 @@
 #   properties:
 #     hibernate:
 #      dialect: org.hibernate.dialect.H2Dialect
+
 spring:
   application:
     name: libflow-api
 
-
   datasource:
-    # Removi o espaço extra que havia antes de url/username
     url: ${DB_URL:jdbc:postgresql://localhost:5432/bibliotecadb}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:}
+    # CORREÇÃO: Remova o ":" extra se ele estiver causando conflito com a variável do IntelliJ
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    # Removido database-platform (O Spring 2026 detecta automático e evita avisos no log)
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -34,9 +33,9 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+
 server:
   port: 8081
-
 
 springdoc:
   swagger-ui:
@@ -46,6 +45,7 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   show-actuator: true
+
 
 
 #  flyway:
