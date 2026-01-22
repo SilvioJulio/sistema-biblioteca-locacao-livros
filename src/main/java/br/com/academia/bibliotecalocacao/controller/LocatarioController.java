@@ -5,12 +5,12 @@ import br.com.academia.bibliotecalocacao.dtos.response.LocatarioResponse;
 import br.com.academia.bibliotecalocacao.service.LocatarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/locatarios")
@@ -26,24 +26,31 @@ public class LocatarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LocatarioResponse> locatarioPorId(@PathVariable Long id){
-        return ResponseEntity.ok(locatarioService.buscarLocatarioPorId(id));
+    public ResponseEntity<LocatarioResponse> locatarioPorId(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
+        // Removido o 'throws', o Service já cuida da exceção se não encontrar
+        var resp = locatarioService.buscarLocatarioPorId(id);
+        return ResponseEntity.ok(resp);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<LocatarioResponse> atualizar(@PathVariable Long id, @RequestBody LocatarioResponse request){
-        return ResponseEntity.ok(locatarioService.atualizarLocatario(id,request));
 
+    @PutMapping("/{id}")
+    public ResponseEntity<LocatarioResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody LocatarioRequest request) throws ChangeSetPersister.NotFoundException {
+        // Ajustado para receber LocatarioRequest no corpo
+        var resp = locatarioService.atualizarLocatario(id, request);
+        return ResponseEntity.ok(resp);
     }
 
     @GetMapping
-    public ResponseEntity<List<LocatarioResponse>> listarTodos(){
+    public ResponseEntity<List<LocatarioResponse>> listarTodos() {
         return ResponseEntity.ok(locatarioService.listarTodosLocatarios());
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<LocatarioResponse> deletar (@PathVariable Long id){
+    public ResponseEntity<Void> deletar(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
         locatarioService.deletarLocatario(id);
         return ResponseEntity.noContent().build();
     }
+
 
 }

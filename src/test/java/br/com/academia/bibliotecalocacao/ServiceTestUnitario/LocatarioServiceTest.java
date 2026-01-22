@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.LocatarioServiceTest;
+package br.com.academia.bibliotecalocacao.ServiceTestUnitario;
 
 import br.com.academia.bibliotecalocacao.dtos.request.LocatarioRequest;
 import br.com.academia.bibliotecalocacao.dtos.response.LocatarioResponse;
@@ -123,12 +123,13 @@ class LocatarioServiceTest {
     }
 
 
+
     @Test
-    void deveBuscarPorId_comSucesso() {
+    void deveBuscarPorIdComSucesso() throws ChangeSetPersister.NotFoundException {
         Long id = 10L;
         LocalDate dn = LocalDate.of(1990, 1, 1);
 
-        Locatario entity = new Locatario(); // precisa de @NoArgsConstructor na entidade
+        Locatario entity = new Locatario();
         entity.setId(id);
         entity.setNome("João");
         entity.setCpf("12345678901");
@@ -152,6 +153,7 @@ class LocatarioServiceTest {
         verify(locatarioRepository, times(1)).findById(id);
         verify(locatarioMapper, times(1)).toResponse(entity);
     }
+
 
     @Test
     void deveLancarNotFound_quandoBuscarPorIdInexistente() {
@@ -224,17 +226,19 @@ class LocatarioServiceTest {
 
 
 
+
+
     @Test
     void deveDeletarLocatarioComSucesso() {
         // Arrange
         Long id = 7L;
 
-        Locatario existente = new Locatario(); // exige @NoArgsConstructor
+        Locatario existente = new Locatario(); // exige @NoArgsConstructor no entity
         existente.setId(id);
 
         when(locatarioRepository.findById(id)).thenReturn(Optional.of(existente));
         when(aluguelRepository.existsByLocatarioId(id)).thenReturn(false);
-        doNothing().when(locatarioRepository).delete(existente);
+
 
         // Act + Assert
         assertDoesNotThrow(() -> locatarioService.deletarLocatario(id));
@@ -243,8 +247,10 @@ class LocatarioServiceTest {
         verify(locatarioRepository, times(1)).findById(id);
         verify(aluguelRepository, times(1)).existsByLocatarioId(id);
         verify(locatarioRepository, times(1)).delete(existente);
-        verify(locatarioRepository, never()).deleteById(ArgumentMatchers.anyLong()); // só pra garantir o caminho
+        verify(locatarioRepository, never()).deleteById(anyLong());
+        verifyNoMoreInteractions(locatarioRepository, aluguelRepository);
     }
+
 
 
     @Test

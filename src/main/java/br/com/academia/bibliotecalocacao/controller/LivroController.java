@@ -15,16 +15,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/livros")
 @RequiredArgsConstructor
-
 public class LivroController {
 
     private final LivroService livroService; // precisa ser final para Lombok gerar o construtor
+
 
     @PostMapping
     public ResponseEntity<LivroResponse> criar(@Valid @RequestBody LivroRequest request) {
         LivroResponse criado = livroService.criarLivro(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<LivroResponse> buscarPorId(@PathVariable Long id) {

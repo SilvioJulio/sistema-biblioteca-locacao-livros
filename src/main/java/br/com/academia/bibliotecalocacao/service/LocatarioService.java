@@ -3,12 +3,22 @@ package br.com.academia.bibliotecalocacao.service;
 import br.com.academia.bibliotecalocacao.dtos.request.LocatarioRequest;
 import br.com.academia.bibliotecalocacao.dtos.response.LocatarioResponse;
 import br.com.academia.bibliotecalocacao.entity.Locatario;
+import br.com.academia.bibliotecalocacao.exception.LocatarioNotFoundException;
 import br.com.academia.bibliotecalocacao.mapper.LocatarioMapper;
 import br.com.academia.bibliotecalocacao.repository.AluguelRepository;
 import br.com.academia.bibliotecalocacao.repository.LocatarioRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.transaction.annotation.Transactional;
+import br.com.academia.bibliotecalocacao.exception.LocatarioNotFoundException;
+
+
 
 import java.util.List;
 
@@ -16,64 +26,64 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LocatarioService {
 
+
     private final LocatarioRepository locatarioRepository;
-    private final LocatarioMapper locatarioMapper; // Injeção da instância
+    private final LocatarioMapper locatarioMapper;
     private final AluguelRepository aluguelRepository;
 
-
-
-    public LocatarioResponse criarLocatario(@Valid LocatarioRequest locatarioResponse) {
-        var locatarioEntity = locatarioMapper.toEntity(locatarioResponse);
-        var locatarioSalvo = locatarioRepository.save(locatarioEntity);
-        return locatarioMapper.toResponse(locatarioSalvo);
+    public LocatarioResponse criarLocatario(@Valid LocatarioRequest request) {
+        var entity = locatarioMapper.toEntity(request);
+        var salvo = locatarioRepository.save(entity);
+        return locatarioMapper.toResponse(salvo);
     }
 
-
-    public LocatarioResponse buscarLocatarioPorId(Long locatarioId) {
-        return locatarioRepository.findById(locatarioId)
-                // CORREÇÃO: use a referência da instância 'locatarioMapper::toResponse'
-                .map(locatarioMapper::toResponse)
-                .orElseThrow(() -> new RuntimeException("Locatário não encontrado com ID: " + locatarioId));
+    // >>> declare throws <<<
+    public LocatarioResponse buscarLocatarioPorId(Long locatarioId)
+            throws ChangeSetPersister.NotFoundException {
+        var locatario = locatarioRepository.findById(locatarioId)
+                .orElseThrow(() -> new LocatarioNotFoundException(locatarioId));
+        return locatarioMapper.toResponse(locatario);
     }
 
+    // >>> declare throws <<<
+    public LocatarioResponse atualizarLocatario(Long locatarioId, @Valid LocatarioRequest request)
+            throws ChangeSetPersister.NotFoundException {
+        var existente = locatarioRepository.findById(locatarioId)
+                .orElseThrow(() -> new LocatarioNotFoundException(locatarioId));
 
-    public LocatarioResponse atualizarLocatario(Long locatarioId, LocatarioResponse locatarioResponse) {
-        var locatarioExistente = locatarioRepository.findById(locatarioId)
-                .orElseThrow(() -> new RuntimeException("Locatário não encontrado com ID: " + locatarioId));
+        existente.setNome(request.nome());
+        existente.setCpf(request.cpf());
+        existente.setTelefone(request.telefone());
+        existente.setEmail(request.email());
+        existente.setDataNascimento(request.dataNascimento());
 
-        // Atualizando os campos da entidade com os dados do Record (Java 21 syntax)
-        locatarioExistente.setNome(locatarioResponse.nome());
-        locatarioExistente.setCpf(locatarioResponse.cpf());
-        locatarioExistente.setTelefone(locatarioResponse.telefone());
-        locatarioExistente.setEmail(locatarioResponse.email());
-        locatarioExistente.setDataNascimento(locatarioResponse.dataNascimento());
-
-        var locatarioAtualizado = locatarioRepository.save(locatarioExistente);
-
-        // CORREÇÃO: Chamada via instância injetada
-        return locatarioMapper.toResponse(locatarioAtualizado);
+        var atualizado = locatarioRepository.save(existente);
+        return locatarioMapper.toResponse(atualizado);
     }
 
     public List<LocatarioResponse> listarTodosLocatarios() {
-        List<Locatario> locatarios = locatarioRepository.findAll();
-        return locatarios.stream()
-
+        return locatarioRepository.findAll()
+                .stream()
                 .map(locatarioMapper::toResponse)
                 .toList();
     }
 
-    public void deletarLocatario(Long locatarioId) {
-        var locatarioExistente = locatarioRepository.findById(locatarioId)
-                .orElseThrow(() -> new RuntimeException("Locatário não encontrado com ID: " + locatarioId));
 
-        // Agora o 'aluguelRepository' será reconhecido
+    @Transactional
+    public void deletarLocatario(Long locatarioId)
+            throws ChangeSetPersister.NotFoundException {
+
+
+        Locatario existente = locatarioRepository.findById(locatarioId)
+                .orElseThrow(() -> new LocatarioNotFoundException(locatarioId));
+
+
         boolean hasAlugueis = aluguelRepository.existsByLocatarioId(locatarioId);
-
         if (hasAlugueis) {
             throw new RuntimeException("Não é possível deletar o locatário, existem alugueis associados a ele.");
         }
 
-        locatarioRepository.delete(locatarioExistente);
+        locatarioRepository.delete(existente);
     }
 
 

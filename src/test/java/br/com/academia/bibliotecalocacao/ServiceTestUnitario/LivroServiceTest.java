@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.LivroServiceTest;
+package br.com.academia.bibliotecalocacao.ServiceTestUnitario;
 
 
 import br.com.academia.bibliotecalocacao.dtos.request.LivroRequest;

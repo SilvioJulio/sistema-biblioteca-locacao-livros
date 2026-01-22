@@ -3,7 +3,6 @@ package br.com.academia.bibliotecalocacao.controller;
 
 import br.com.academia.bibliotecalocacao.dtos.request.AluguelRequest;
 import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse;
-import br.com.academia.bibliotecalocacao.dtos.response.AutorResponse;
 import br.com.academia.bibliotecalocacao.service.AluguelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

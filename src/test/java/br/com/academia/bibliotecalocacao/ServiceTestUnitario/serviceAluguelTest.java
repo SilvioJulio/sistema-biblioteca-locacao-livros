@@ -1,4 +1,4 @@
-package br.com.academia.bibliotecalocacao.AluguelServiceTest;
+package br.com.academia.bibliotecalocacao.ServiceTestUnitario;
 
 import br.com.academia.bibliotecalocacao.dtos.response.AluguelResponse;
 import br.com.academia.bibliotecalocacao.entity.Aluguel;
@@ -55,7 +55,7 @@ public class serviceAluguelTest {
     @Test
     void deveCriarAluguelComSucessoTest() {
 
-        AluguelRequest aluguelRequest = new AluguelRequest(1L, 1L);
+        AluguelRequest aluguelRequest = new AluguelRequest(1L, 1L, 5);
 
         Livro livro = new Livro();
         livro.setId(1L);
@@ -94,7 +94,7 @@ public class serviceAluguelTest {
 
     @Test
     void deveRetornarErroAoCriarAluguelComLivroInexistenteTest() {
-        AluguelRequest aluguelRequest = new AluguelRequest(999L, 1L);
+        AluguelRequest aluguelRequest = new AluguelRequest(999L, 1L, 5);
 
         Livro livro = new Livro();
         livro.setId(1L);
@@ -111,7 +111,7 @@ public class serviceAluguelTest {
     void  deveAtualizarAluguelComSucessoTest() {
         Long aluguelId = 10L;
 
-        AluguelRequest aluguelRequest = new AluguelRequest(1L, 1L);
+        AluguelRequest aluguelRequest = new AluguelRequest(1L, 1L, 5);
 
         Livro livro = new Livro();
         livro.setId(1L);
