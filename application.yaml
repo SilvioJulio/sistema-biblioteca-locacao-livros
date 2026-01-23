@@ -15,28 +15,39 @@ spring:
   application:
     name: libflow-api
 
-
   datasource:
-    # Removi o espaço extra que havia antes de url/username
     url: ${DB_URL:jdbc:postgresql://localhost:5432/bibliotecadb}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+  # 1. CONFIGURAÇÃO DO FLYWAY
+  flyway:
+    enabled: true
+    # Garanta que seus arquivos estejam em: src/main/resources/db/migration
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    # Adicionado para garantir que o Flyway limpe erros de tentativas falhas em dev
+    repair-on-migrate: true
+
   jpa:
-    # Removido database-platform (O Spring 2026 detecta automático e evita avisos no log)
+    # 2. HIBERNATE VALIDATE
+    # Usamos 'validate' para garantir que o Java bate com o SQL do Flyway
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        # Garante que o Hibernate aguarde o Flyway completar as migrações
+        migration:
+          strategy: flyway
         jdbc:
           lob:
             non_contextual_creation: true
+
 server:
   port: 8081
-
 
 springdoc:
   swagger-ui:
@@ -46,8 +57,3 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   show-actuator: true
-
-
-#  flyway:
-#    enabled: false
-
